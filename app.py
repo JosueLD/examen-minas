@@ -5,7 +5,7 @@ from datetime import datetime
 
 # --- DATOS DEL DOCENTE ---
 DOCENTE_INFO = "MSc. Ing. Josué Loayza Díaz - CIP: 169617"
-URL_HOJA = st.secrets["connections"]["spreadsheet"]["gsheets"]
+URL_HOJA = st.secrets["connections"]["gsheets"]["spreadsheet"]
 
 class PDF(FPDF):
     def footer(self):
