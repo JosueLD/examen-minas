@@ -3,6 +3,7 @@ import pandas as pd
 from fpdf import FPDF
 from datetime import datetime
 from streamlit_gsheets import GSheetsConnection
+import io
 
 # --- DATOS DEL DOCENTE ---
 DOCENTE_INFO = "MSc. Ing. Josué Loayza Díaz - CIP: 169617"
@@ -200,8 +201,7 @@ if password == CLAVE_CORRECTA:
                 pdf.set_text_color(0)
                 pdf.cell(20, 12, txt=f" / {puntos_max}", ln=True, align='L')
                 
-                # --- FINALIZACIÓN DEL PDF Y MUESTRA DE RESULTADOS ---
-                # Firma del docente en el PDF
+                # --- FINALIZACIÓN SEGURA DEL PDF ---
                 pdf.ln(20)
                 try:
                     pdf.image("firma.png", x=85, y=pdf.get_y() - 14, w=40)
@@ -211,18 +211,26 @@ if password == CLAVE_CORRECTA:
                 pdf.cell(0, 5, txt="_______________________________________", ln=True, align='C')
                 pdf.cell(0, 5, txt=f"{DOCENTE_INFO}", ln=True, align='C')
 
-                # 1. Generamos el contenido del PDF una sola vez
-                pdf_output = pdf.output()
+                # 1. Generamos los bytes del PDF de forma robusta
+                # En fpdf2, llamar a output() sin argumentos devuelve un bytearray
+                try:
+                    pdf_bytes = pdf.output()
+                except Exception as e:
+                    st.error(f"Error técnico al generar PDF: {e}")
+                    pdf_bytes = b""
 
-                # 2. Mostramos los mensajes en la interfaz de la web (Streamlit)
+                # 2. Mensajes en pantalla
                 st.warning("🔒 EXAMEN FINALIZADO")
                 st.markdown(f"### Nota Final: {pts_final} / {puntos_max}")
                 
-                # 3. Mostramos el botón para que el alumno descargue el PDF generado
-                st.download_button(label="📥 Descargar Examen Oficial (PDF)", 
-                                   data=pdf_output, 
-                                   file_name=f"Examen_F{fila_sel}_{id_alumno}.pdf",
-                                   mime="application/pdf")
+                # 3. Botón de descarga con validación de peso
+                if len(pdf_bytes) > 0:
+                    st.download_button(label="📥 Descargar Examen Oficial (PDF)", 
+                                       data=pdf_bytes, 
+                                       file_name=f"Examen_F{fila_sel}_{id_alumno}.pdf",
+                                       mime="application/pdf")
+                else:
+                    st.error("⚠️ El PDF se generó vacío. Intente refrescar la página.")
 
 elif password != "":
     st.error("❌ Clave incorrecta. Solicite el acceso al docente.")
