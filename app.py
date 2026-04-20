@@ -214,7 +214,7 @@ if password == CLAVE_CORRECTA:
 
                 # 1. Generamos el output directamente. 
                 # En las nuevas versiones de fpdf2, esto ya es lo que Streamlit necesita.
-                pdf_output = pdf.output()
+                pdf_output = pdf.output(dest='S').encode('latin1')
 
                 # 2. Mensajes en pantalla (solo una vez)
                 st.warning("🔒 EXAMEN FINALIZADO")
