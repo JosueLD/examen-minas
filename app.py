@@ -213,11 +213,17 @@ if password == CLAVE_CORRECTA:
                 st.warning("🔒 EXAMEN FINALIZADO")
                 st.markdown(f"### Nota Final: {pts_final} / {puntos_max}")
                 
-                pdf_bytes = bytes(pdf.output())
-                st.download_button("📥 Descargar Examen Oficial (PDF)", 
-                   data=pdf_bytes, 
-                   file_name=f"Examen_F{fila_sel}_{id_alumno}.pdf",
-                   mime="application/pdf")
+                # Generar el PDF y guardarlo en una variable
+                pdf_output = pdf.output()
+                
+                st.warning("🔒 EXAMEN FINALIZADO")
+                st.markdown(f"### Nota Final: {pts_final} / {puntos_max}")
+                
+                # El botón de descarga ahora recibe el output directamente
+                st.download_button(label="📥 Descargar Examen Oficial (PDF)", 
+                                   data=pdf_output, 
+                                   file_name=f"Examen_F{fila_sel}_{id_alumno}.pdf",
+                                   mime="application/pdf")
 
 elif password != "":
     st.error("❌ Clave incorrecta. Solicite el acceso al docente.")
