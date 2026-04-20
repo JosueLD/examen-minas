@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from fpdf import FPDF
 from datetime import datetime
+import pytz
 from streamlit_gsheets import GSheetsConnection
 import io
 
@@ -96,8 +97,11 @@ if password == CLAVE_CORRECTA:
                             # IMPORTANTE: ttl=0 obliga a Streamlit a no usar caché para leer la hoja
                             existentes = conn.read(spreadsheet=url_hoja, ttl=0)
                             
+                            hora_peru = datetime.now(pytz.timezone("America/Lima"))
+                            fecha_formateada = hora_peru.strftime("%d/%m/%Y %H:%M")
+
                             nueva_fila = pd.DataFrame([{
-                                "Fecha": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                                "Fecha": fecha_formateada,
                                 "ID": id_alumno,
                                 "Apellidos": apellidos,
                                 "Nombres": nombres,
