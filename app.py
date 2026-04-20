@@ -216,8 +216,8 @@ if password == CLAVE_CORRECTA:
                 # Generar el PDF y guardarlo en una variable
                 pdf_output = pdf.output()
                 
-                st.warning("🔒 EXAMEN FINALIZADO")
-                st.markdown(f"### Nota Final: {pts_final} / {puntos_max}")
+                # st.warning("🔒 EXAMEN FINALIZADO")
+                # st.markdown(f"### Nota Final: {pts_final} / {puntos_max}")
                 
                 # El botón de descarga ahora recibe el output directamente
                 st.download_button(label="📥 Descargar Examen Oficial (PDF)", 
