@@ -201,7 +201,7 @@ if password == CLAVE_CORRECTA:
                 pdf.set_text_color(0)
                 pdf.cell(20, 12, txt=f" / {puntos_max}", ln=True, align='L')
                 
-                # --- FINALIZACIÓN SEGURA DEL PDF ---
+                # --- FINALIZACIÓN DEL PDF ---
                 pdf.ln(20)
                 try:
                     pdf.image("firma.png", x=85, y=pdf.get_y() - 14, w=40)
@@ -211,26 +211,19 @@ if password == CLAVE_CORRECTA:
                 pdf.cell(0, 5, txt="_______________________________________", ln=True, align='C')
                 pdf.cell(0, 5, txt=f"{DOCENTE_INFO}", ln=True, align='C')
 
-                # 1. Generamos los bytes del PDF de forma robusta
-                # En fpdf2, llamar a output() sin argumentos devuelve un bytearray
-                try:
-                    pdf_bytes = pdf.output()
-                except Exception as e:
-                    st.error(f"Error técnico al generar PDF: {e}")
-                    pdf_bytes = b""
+                # 1. Generamos el contenido del PDF (Lo que antes funcionaba)
+                # Lo convertimos a bytes inmediatamente para que la nube no se confunda
+                pdf_bytes = bytes(pdf.output())
 
-                # 2. Mensajes en pantalla
+                # 2. Mostramos los mensajes en la web SOLO UNA VEZ
                 st.warning("🔒 EXAMEN FINALIZADO")
                 st.markdown(f"### Nota Final: {pts_final} / {puntos_max}")
                 
-                # 3. Botón de descarga con validación de peso
-                if len(pdf_bytes) > 0:
-                    st.download_button(label="📥 Descargar Examen Oficial (PDF)", 
-                                       data=pdf_bytes, 
-                                       file_name=f"Examen_F{fila_sel}_{id_alumno}.pdf",
-                                       mime="application/pdf")
-                else:
-                    st.error("⚠️ El PDF se generó vacío. Intente refrescar la página.")
+                # 3. Botón de descarga
+                st.download_button(label="📥 Descargar Examen Oficial (PDF)", 
+                                   data=pdf_bytes, 
+                                   file_name=f"Examen_F{fila_sel}_{id_alumno}.pdf",
+                                   mime="application/pdf")
 
 elif password != "":
     st.error("❌ Clave incorrecta. Solicite el acceso al docente.")
