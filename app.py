@@ -207,21 +207,22 @@ if password == CLAVE_CORRECTA:
                     pdf.image("firma.png", x=85, y=pdf.get_y() - 14, w=40)
                 except:
                     pdf.ln(5)
+                
                 pdf.set_font("Arial", 'I', 8)
                 pdf.cell(0, 5, txt="_______________________________________", ln=True, align='C')
                 pdf.cell(0, 5, txt=f"{DOCENTE_INFO}", ln=True, align='C')
 
-                # 1. Generamos el contenido del PDF (Lo que antes funcionaba)
-                # Lo convertimos a bytes inmediatamente para que la nube no se confunda
-                pdf_bytes = bytes(pdf.output())
+                # 1. Generamos el output directamente. 
+                # En las nuevas versiones de fpdf2, esto ya es lo que Streamlit necesita.
+                pdf_output = pdf.output()
 
-                # 2. Mostramos los mensajes en la web SOLO UNA VEZ
+                # 2. Mensajes en pantalla (solo una vez)
                 st.warning("🔒 EXAMEN FINALIZADO")
                 st.markdown(f"### Nota Final: {pts_final} / {puntos_max}")
                 
                 # 3. Botón de descarga
                 st.download_button(label="📥 Descargar Examen Oficial (PDF)", 
-                                   data=pdf_bytes, 
+                                   data=pdf_output, 
                                    file_name=f"Examen_F{fila_sel}_{id_alumno}.pdf",
                                    mime="application/pdf")
 
