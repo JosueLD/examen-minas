@@ -1,5 +1,6 @@
 streamlit
 pandas
 fpdf
+pytz
 openpyxl
 st-gsheets-connection
