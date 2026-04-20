@@ -29,8 +29,8 @@ def cargar_preguntas():
 
 try:
     df_todo = cargar_preguntas()
-except:
-    st.error("⚠️ Error: No se encontró 'preguntas.xlsx' en la carpeta.")
+except Exception as e:
+    st.error(f"⚠️ Error: No se encontró 'preguntas.xlsx' en la carpeta o hay un problema al leerlo. Detalle: {e}")
     st.stop()
 
 # --- INTERFAZ PRINCIPAL ---
@@ -87,11 +87,13 @@ if password == CLAVE_CORRECTA:
                             if r_u.startswith(letra_corr):
                                 puntos_obtenidos += df_preguntas.iloc[i]['puntos']
                         
-                        # --- GUARDAR EN GOOGLE SHEETS ---
+                        # --- GUARDAR EN GOOGLE SHEETS (CORREGIDO) ---
                         try:
                             conn = st.connection("gsheets", type=GSheetsConnection)
                             url_hoja = st.secrets["connections"]["gsheets"]["spreadsheet"]
-                            existentes = conn.read(spreadsheet=url_hoja)
+                            
+                            # IMPORTANTE: ttl=0 obliga a Streamlit a no usar caché para leer la hoja
+                            existentes = conn.read(spreadsheet=url_hoja, ttl=0)
                             
                             nueva_fila = pd.DataFrame([{
                                 "Fecha": datetime.now().strftime("%d/%m/%Y %H:%M"),
@@ -104,10 +106,13 @@ if password == CLAVE_CORRECTA:
                             
                             actualizada = pd.concat([existentes, nueva_fila], ignore_index=True)
                             conn.update(spreadsheet=url_hoja, data=actualizada)
-                            st.toast("✅ Nota registrada en base de datos")
+                            st.toast("✅ Nota registrada en base de datos (Google Sheets)")
+                            
                         except Exception as e:
-                            st.warning(f"Nota procesada localmente (Sin conexión a nube)")
-
+                            # AQUÍ VERÁS EXACTAMENTE QUÉ FALLÓ EN TU CONEXIÓN A GOOGLE
+                            st.error(f"⚠️ Error al guardar en la nube: {e}")
+                        
+                        # Sin importar si falla la subida, se genera el PDF y se bloquea el examen
                         st.session_state.enviado = True
                         st.rerun()
 
@@ -124,7 +129,7 @@ if password == CLAVE_CORRECTA:
                 
                 # Encabezado
                 pdf.set_font("Arial", 'B', 14)
-                pdf.cell(0, 10, txt="EXAMEN DE INGENIERIA DE MINAS", ln=True, align='C')
+                pdf.cell(0, 10, txt="EXAMEN DE INGENIERIA DE MINAS UCSM - Mecánica de Rocas I", ln=True, align='C')
                 pdf.set_font("Arial", 'I', 10)
                 pdf.cell(0, 5, txt=f"Docente: {DOCENTE_INFO}", ln=True, align='C')
                 pdf.set_draw_color(180, 180, 180)
