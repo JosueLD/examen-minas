@@ -123,6 +123,10 @@ if password == CLAVE_CORRECTA:
 
             # --- VISTA POST-EXAMEN (PDF) ---
             if st.session_state.enviado:
+                from zoneinfo import ZoneInfo
+                hora_peru = datetime.now(ZoneInfo("America/Lima"))
+                fecha_formateada = hora_peru.strftime("%d/%m/%Y %H:%M")
+                
                 puntos_max = df_preguntas['puntos'].sum()
                 pts_final = 0
                 
@@ -154,6 +158,10 @@ if password == CLAVE_CORRECTA:
                 pdf.cell(35, 7, txt="FILA:", ln=0)
                 pdf.set_font("Arial", '', 11)
                 pdf.cell(0, 7, txt=f"{fila_sel}", ln=True)
+                pdf.set_font("Arial", 'B', 11)
+                pdf.cell(35, 7, txt="FECHA:", ln=0)
+                pdf.set_font("Arial", '', 11)
+                pdf.cell(0, 7, txt=f"{fecha_formateada}", ln=True)
                 
                 pdf.ln(2)
                 pdf.line(25, pdf.get_y(), 185, pdf.get_y())
