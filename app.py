@@ -34,7 +34,7 @@ except:
     st.stop()
 
 # --- INTERFAZ PRINCIPAL ---
-st.title("📝 Sistema de Evaluación de Ingeniería")
+st.title("📝 Ingeniería de Minas UCSM - Mecánica de Rocas I")
 st.caption(f"Docente: {DOCENTE_INFO}")
 
 # Seguridad
