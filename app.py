@@ -200,7 +200,8 @@ if password == CLAVE_CORRECTA:
                 pdf.set_text_color(0)
                 pdf.cell(20, 12, txt=f" / {puntos_max}", ln=True, align='L')
                 
-                # Firma
+                # --- FINALIZACIÓN DEL PDF Y MUESTRA DE RESULTADOS ---
+                # Firma del docente en el PDF
                 pdf.ln(20)
                 try:
                     pdf.image("firma.png", x=85, y=pdf.get_y() - 14, w=40)
@@ -210,16 +211,14 @@ if password == CLAVE_CORRECTA:
                 pdf.cell(0, 5, txt="_______________________________________", ln=True, align='C')
                 pdf.cell(0, 5, txt=f"{DOCENTE_INFO}", ln=True, align='C')
 
-                # st.warning("🔒 EXAMEN FINALIZADO")
-                # st.markdown(f"### Nota Final: {pts_final} / {puntos_max}")
-                
-                # Generar el PDF y guardarlo en una variable
+                # 1. Generamos el contenido del PDF una sola vez
                 pdf_output = pdf.output()
-                
+
+                # 2. Mostramos los mensajes en la interfaz de la web (Streamlit)
                 st.warning("🔒 EXAMEN FINALIZADO")
                 st.markdown(f"### Nota Final: {pts_final} / {puntos_max}")
                 
-                # El botón de descarga ahora recibe el output directamente
+                # 3. Mostramos el botón para que el alumno descargue el PDF generado
                 st.download_button(label="📥 Descargar Examen Oficial (PDF)", 
                                    data=pdf_output, 
                                    file_name=f"Examen_F{fila_sel}_{id_alumno}.pdf",
