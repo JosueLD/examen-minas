@@ -160,21 +160,33 @@ if password == CLAVE_CORRECTA:
                     r_u = respuestas_usuario[i]
                     es_ok = r_u.startswith(l_corr)
                     
+                    # Forzamos al cursor a volver al margen izquierdo (25mm)
+                    pdf.set_x(25)
+                    
+                    # 1. La Pregunta
                     pdf.set_font("Arial", 'B', 10)
                     pdf.set_text_color(0)
-                    pdf.multi_cell(0, 7, txt=f"{i+1}. {fila['pregunta']} ({fila['puntos']} pts)")
+                    # Usamos w=160 para dar un ancho fijo y seguro (A4 mide 210mm - 25mm de cada lado = 160mm)
+                    pdf.multi_cell(160, 6, txt=f"{i+1}. {fila['pregunta']} ({fila['puntos']} pts)", border=0, align='L')
                     
+                    # 2. La Respuesta del Alumno
+                    pdf.set_x(25) # Reset x antes de la respuesta
                     pdf.set_font("Arial", '', 10)
                     if es_ok:
                         pts_final += fila['puntos']
                         pdf.set_text_color(0, 0, 255) # Azul
-                        pdf.cell(0, 6, txt=f"   Respuesta: {r_u} [CORRECTO]", ln=True)
+                        pdf.multi_cell(160, 6, txt=f"   Tu Respuesta: {r_u} [CORRECTO]", border=0, align='L')
                     else:
                         pdf.set_text_color(220, 0, 0) # Rojo
-                        pdf.cell(0, 6, txt=f"   Respuesta: {r_u} [INCORRECTO]", ln=True)
+                        pdf.multi_cell(160, 6, txt=f"   Tu Respuesta: {r_u} [INCORRECTO]", border=0, align='L')
+                        
+                        pdf.set_x(25) # Reset x antes de mostrar la correcta
                         pdf.set_text_color(0, 120, 0) # Verde
-                        pdf.cell(0, 6, txt=f"   Respuesta Correcta: {l_corr}) {fila[l_corr]}", ln=True)
-                    pdf.ln(2)
+                        # Obtenemos el texto de la opción correcta desde el DataFrame
+                        texto_corr = fila[l_corr]
+                        pdf.multi_cell(160, 6, txt=f"   Respuesta Correcta: {l_corr}) {texto_corr}", border=0, align='L')
+                    
+                    pdf.ln(4) # Salto de línea controlado
 
                 # Recuadro de Nota
                 pdf.ln(5)
@@ -201,10 +213,11 @@ if password == CLAVE_CORRECTA:
                 st.warning("🔒 EXAMEN FINALIZADO")
                 st.markdown(f"### Nota Final: {pts_final} / {puntos_max}")
                 
-                pdf_bytes = pdf.output(dest='S').encode('latin-1', 'replace')
+                pdf_bytes = bytes(pdf.output())
                 st.download_button("📥 Descargar Examen Oficial (PDF)", 
-                                   data=pdf_bytes, 
-                                   file_name=f"Examen_F{fila_sel}_{id_alumno}.pdf")
+                   data=pdf_bytes, 
+                   file_name=f"Examen_F{fila_sel}_{id_alumno}.pdf",
+                   mime="application/pdf")
 
 elif password != "":
     st.error("❌ Clave incorrecta. Solicite el acceso al docente.")
